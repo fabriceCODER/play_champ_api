@@ -9,9 +9,50 @@ generator client {
 
 model User {
   id        String   @id @default(uuid())
-  name      String   // Add this line if missing
+  name      String
   email     String   @unique
   password  String
   role      String   @default("user")
   createdAt DateTime @default(now())
+  reviews   Review[]
+}
+
+model Category {
+  id    String  @id @default(uuid())
+  name  String  @unique
+  games Game[]
+}
+
+model Game {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  genre       String
+  platform    String   // Keep old column temporarily
+  newPlatform Platform? // New nullable enum column
+  releaseDate DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  categoryId  String?   // Temporarily nullable
+  category    Category? @relation(fields: [categoryId], references: [id])
+  reviews     Review[]
+}
+
+enum Platform {
+  PC
+  PlayStation
+  Xbox
+  Switch
+  Mobile
+}
+
+
+model Review {
+  id      String  @id @default(uuid())
+  rating  Int
+  comment String
+  userId  String
+  user    User    @relation(fields: [userId], references: [id])
+  gameId  String
+  game    Game    @relation(fields: [gameId], references: [id])
 }
